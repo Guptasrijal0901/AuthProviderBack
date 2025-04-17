@@ -8,11 +8,9 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 
-// ✅ Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Fix CORS Policy
 app.use(
   cors({
     origin: "http://localhost:3000", // Allow frontend requests
@@ -22,7 +20,6 @@ app.use(
   })
 );
 
-// ✅ MongoDB Connection with Error Handling
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
