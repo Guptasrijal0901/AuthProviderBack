@@ -37,49 +37,40 @@ mongoose
   })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// ✅ User Schema
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
 
-// ✅ Ensure Unique Email Index
 UserSchema.index({ email: 1 }, { unique: true });
 
 const User = mongoose.model("User", UserSchema);
 
-// ✅ Signup Route
 app.post("/signup", async (req, res) => {
   try {
     let { username, email, password } = req.body;
 
-    // ✅ Validate input fields
     if (!username || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // ✅ Normalize email (convert to lowercase to avoid duplicate issues)
     email = email.toLowerCase();
 
-    // ✅ Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // ✅ Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword });
 
-    // ✅ Save user
     await user.save();
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.error("❌ Signup error:", error);
 
-    // Handle duplicate key error (MongoDB E11000 error)
-    if (error.code === 11000) {
+if (error.code === 11000) {
       return res.status(400).json({ error: "Email is already registered" });
     }
 
@@ -87,7 +78,6 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// ✅ Login Route
 app.post("/login", async (req, res) => {
   try {
     let { email, password } = req.body;
